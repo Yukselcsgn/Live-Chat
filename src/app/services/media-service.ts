@@ -14,7 +14,7 @@ export class MediaService {
   public remoteStream = new EventEmitter<MediaStream>();
 
   constructor(){
-    this.socket=io('https://192.168.1.4');
+    this.socket=io('https://192.168.1.4:3000');
     this.initializeSocketEvents();
   }
 
@@ -74,20 +74,41 @@ export class MediaService {
 
   }
 
+  //Starts a call by creating an offer and sending it to the callee
   async startCall(){
-
+    await this.createPeerConnection();
+    this.localStream.getTracks().forEach(track =>
+      this.peerConnection.addTrack(track,this.localStream)
+    );
+    const offer = await this.peerConnection.createOffer();
+    await this.peerConnection.setLocalDescription(offer);
+    this.socket.emit('offer',this.peerConnection.localDescription);
   }
 
-  acceptCall(){
-
+  async acceptCall(){
+    this.localStream.getTracks().forEach(track=>
+      this.peerConnection.addTrack(track,this.localStream)
+    );
+    const answer = await this.peerConnection.createAnswer();
+    await this.peerConnection.setLocalDescription(answer);
+    this.socket.emit('answer',this.peerConnection.localDescription);
   }
 
   rejectCall(){
-
+    this.cleanup();
   }
 
+  //Stops the call by stopping media tracks.
   stopCall(){
+    this.cleanup();
 
+    if(this.localStream){
+      this.localStream.getTracks().forEach(
+        track=>track.stop()
+      );
+    }
+
+    this.remoteStream.emit(null as any);
   }
 
   cleanup(){
