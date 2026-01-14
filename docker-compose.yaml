@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  webrtc-app:
+    build: .
+    container_name: webrtc-single
+    ports:
+      - "4200:4200"
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - ./server/certs:/app/certs:ro
+    environment:
+      - SSL_CERT=/certs/localhost+2.pem
+      - SSL_KEY=/certs/localhost+2-key.pem
+    

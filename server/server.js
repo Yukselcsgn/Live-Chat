@@ -6,6 +6,14 @@ const path = require('path')
 
 const app = express();
 
+app.use(express.static('/app/public'));
+
+app.get('/*', (req, res) => {
+  res.sendFile('/app/public/index.html');
+});
+
+
+
 //Load SSL certificate and key with correct path
 const options={
   key: fs.readFileSync(path.join(__dirname,'certs','localhost+2-key.pem')),
