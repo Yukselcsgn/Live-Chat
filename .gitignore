@@ -41,3 +41,10 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+
+DEV_README.md
+
+server/certs/*.pem
+server/certs/*.key
+server/node_modules
